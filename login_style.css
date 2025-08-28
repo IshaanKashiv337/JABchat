@@ -1,0 +1,155 @@
+@import url('https://fonts.googleapis.com/css2?family=Bitcount+Prop+Single:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bitcount+Prop+Double:wght@100..900&family=Bitcount+Prop+Single:wght@100..900&display=swap');
+body{
+    display: block;
+    background-color: black;
+    font-family: "Bitcount Prop Single", system-ui;
+    /* #282454 */
+
+}
+#wrapper{
+    display: flex;
+    flex-direction: row;
+}
+
+.rl_button{
+    display: flex;
+    /*   */
+    margin-bottom: 0px;
+}
+
+#logo{
+    height: 100px;
+    width: 270px;
+    /*   */
+    margin-top: 20px;
+}
+
+/* #login_page_div,#description_div{
+    flex: 1;
+} */
+
+#login_page_div{
+    display: flex;
+    font-family: "Bitcount Prop Single", system-ui;
+    width: 34%;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    border: 2px solid black;
+}
+
+#toggle_login{
+    border-radius: 4px;
+    background-color: #ffc42c;
+    font-size: 25px;
+    height: 50px;
+    width: 160px;    
+    font-family: "Bitcount Prop Single", system-ui;
+    margin-top: 60px;
+    margin-right: 40px;
+    
+}
+
+#toggle_register{
+    border-radius: 4px;
+    background-color: #ffc42c;
+    font-size: 25px;
+    height: 50px;
+    width: 160px;
+    font-family: "Bitcount Prop Single", system-ui;
+    margin-top: 60px;
+    margin-bottom: 0px;
+}
+
+#login_img{
+    height: 160px;
+    width: 230px;
+    margin-bottom: 50px;
+    margin-top: 100px;
+     
+
+}
+
+#username_input{
+    border-radius: 100px;
+    font-family: "Bitcount Prop Single", system-ui;
+    font-size: 20px;
+    width: 250px;
+    height: 30px;
+    margin-bottom: 20px;
+    background-color: #ffc42c;
+    color: black;
+}
+
+#password_input{
+    border-radius: 100px;
+    font-size: 20px;
+    width: 250px;
+    height: 30px;
+    margin-bottom: 20px;
+    background-color: #ffc42c;
+    font-family: "Bitcount Prop Single", system-ui;
+    color: black;
+}
+
+#login_button{
+     
+    font-size: 20px;
+    border-radius: 100px;
+    width: 200px;
+    height: 30px;
+    margin-bottom: 30px;
+    background-color: black;
+    color: #ffc42c;
+    border-color: #ffc42c;
+    font-family: "Bitcount Prop Single", system-ui;
+}
+
+#create_account{
+    font-size: 0.9em;
+    font-family: "Bitcount Prop Single", system-ui;
+    margin-top: 70px;
+}
+
+#create_account_label{
+    padding-right: 70px;
+    font-family: "Bitcount Prop Single", system-ui;
+}
+
+#description_wrapper_div{
+    display:flex;
+    position: relative;
+     
+    width: 66%;
+    border-left: 2px solid #ffc42c;
+    
+    
+    
+    /* display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: calc(100vh - 100px);
+    margin-top: -; */
+}
+
+
+#login_vid{
+    border-radius: 30px;
+    margin-left: 60px;
+    margin-top: 60px;
+    border: 2px solid black;
+    /* border: 2px solid black; */
+}
+
+
+#description{
+    border: 2px solid black;
+    text-align: right;
+    margin-top: 55%;
+    margin-right: 20px;
+    margin-left: 0%;
+    color: #ffc42c;
+    font-family: "Bitcount Prop Double", system-ui;
+    font-size: 1.3em;
+}
