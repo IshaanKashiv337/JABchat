@@ -10,7 +10,7 @@ from pymongo import MongoClient
 
 registered_users = {}
 thread_list = []
-
+user_found = False
 
 
 
@@ -38,7 +38,7 @@ def make_thread_for_new_client(client_socket, registered_users_update_semaphore,
 # This part of code starts the server
 def start_server():
     server_socket = socket_module.socket(socket_module.AF_INET, socket_module.SOCK_STREAM)
-    host = "192.168.1.3"
+    host = "10.239.30.82"
     port = 12345
     server_socket.bind((host, port))
     server_socket.listen(5)
@@ -55,6 +55,15 @@ def start_server():
 def receive_formatted_string(client_socket):
     formatted_string = client_socket.recv(1024).decode("utf-8")
     return formatted_string
+
+def format_and_send_formatted_string(client_socket, formatted_string, operation_status):
+    if operation_status == True:
+        formatted_string = formatted_string + ";+; operation_status = True"
+    else:
+        formatted_string = formatted_string + ";+; operation_status = False"
+    client_socket.send(formatted_string.encode("utf-8"))
+    print("sent to client = ", formatted_string)
+
     
 #-------------------- parse formatted string --------------------
 #this function separates and stores command, username, password/message from the received formatted string into a dictionary
@@ -104,10 +113,10 @@ def add_new_user(arg_separated_fields_dict, client_socket, registered_users_upda
             insert_data = {"username": username}
             collection.insert_one(insert_data)
             registered_users[username] = {"login_flag": False, "client_socket": client_socket}
-            client_socket.send("you have registered".encode("utf-8"))
+            # client_socket.send("you have registered".encode("utf-8"))
             user_already_exists = False
         else:
-            client_socket.send("user already exists".encode("utf-8"))
+            # client_socket.send("user already exists".encode("utf-8"))
             user_already_exists = True
     # print("registered users: ", registered_users)
     return user_already_exists
@@ -143,13 +152,19 @@ def hash_and_store_password(arg_separated_fields_dict, collection):
     print("registered users = ", registered_users)
 
 def login_password_to_hashvalue(arg_separated_fields_dict, collection):
+    global user_found
+    hashed_password = ""
     password = arg_separated_fields_dict["password"]
     password = password.encode("utf-8")
     username = arg_separated_fields_dict["username"]
     salt = collection.find_one({"username": username})
-    salt = salt["salt"]
-    hashed_password = bcrypt.hashpw(password, salt)
-    print("hashed password = ", hashed_password)
+    if salt is not None:
+        salt = salt["salt"]
+        hashed_password = bcrypt.hashpw(password, salt)
+        print("hashed password = ", hashed_password)
+        user_found = True
+    else:
+        user_found = False
     return hashed_password
 
 
@@ -181,8 +196,10 @@ def update_registered_users(argtuple, arg_separated_fields_dict, client_socket):
     if (argtuple[0],argtuple[1]) == (True, True) and this_username in registered_users.keys():
         registered_users[this_username] = {"login_flag": True, "client_socket": client_socket}
         print(f"{arg_separated_fields_dict["username"]} logged in")
+        return True
     else:
         print(f"{arg_separated_fields_dict["username"]}'s login request failed")
+        return False
     
 
 #-------------------- modify message--------------------
@@ -204,25 +221,44 @@ def send_message(arg_receiver_name, arg_message):
 #-------------------- target function--------------------
 #this function is the primary function that the thread will call
 def handle_client_messages(client_socket, registered_users_update_semaphore, collection):
+    global user_found
+    print("entered in handle client messages")
     while True:
         formatted_string = receive_formatted_string(client_socket)
+        print("received from client")
         separated_fields_dict = parse_formatted_string(formatted_string)
+        print("parsed the string")
         match separated_fields_dict["command"]:
             case "register":
+                operation_status = False
                 # policy_check = password_policy_check(separated_fields_dict)
                 # if policy_check == True:
                 user_already_exists = add_new_user(separated_fields_dict, client_socket, registered_users_update_semaphore, collection)
+                print("passed add new user")
                 if user_already_exists == True:
+                    operation_status = False
+                    print("inside the if block")
+                    format_and_send_formatted_string(client_socket, formatted_string, operation_status)
+                    # client_socket.send("Cannot Register: Username Already Exists".encode("utf-8"))
                     continue
                 assign_salt_to_new_user(separated_fields_dict, collection)
+                print("passed assign salt")
                 hash_and_store_password(separated_fields_dict, collection)
+                print("passed hash and store")
+                operation_status = True
+                format_and_send_formatted_string(client_socket, formatted_string, operation_status)
+                print("passed format and send")
+                # client_socket.send("successful".encode("utf-8"))
                 # else:
                     # print(f"cannot register {separated_fields_dict["username"]} as password did not follow rules")
             case "login":
+                login_status = False
                 hashed_password = login_password_to_hashvalue(separated_fields_dict, collection)
-                validity_and_username = validity_check(separated_fields_dict, hashed_password, collection)
-                with registered_users_update_semaphore:
-                    update_registered_users(validity_and_username, separated_fields_dict, client_socket)
+                if user_found == True:
+                    validity_and_username = validity_check(separated_fields_dict, hashed_password, collection)
+                    with registered_users_update_semaphore:
+                        login_status = update_registered_users(validity_and_username, separated_fields_dict, client_socket)
+                format_and_send_formatted_string(client_socket, formatted_string, login_status)
             case "chat":
                 modified_message = merge_name(validity_and_username[2], separated_fields_dict["message"])
                 send_message(separated_fields_dict["username"], modified_message)
