@@ -8,6 +8,7 @@ from pymongo import MongoClient
 
 
 
+
 registered_users = {}
 thread_list = []
 user_found = False
@@ -283,4 +284,5 @@ all_users = generate_username_list(collection)
 for i in all_users:
     registered_users[i] = None
 main()
+
 
