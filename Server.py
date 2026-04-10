@@ -15,6 +15,7 @@ user_found = False
 
 
 
+
 def connect_to_db():
     db_connection_to_server = MongoClient("mongodb://localhost:27017/")
     db = db_connection_to_server["server"]
