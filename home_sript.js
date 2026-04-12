@@ -5,6 +5,7 @@ const client2 = document.getElementById("client2")
 
 message_flag = 0
 
+
 function change_bg_and_text_color(element){
     element.style.backgroundColor = "black"
     element.style.color = "#ffc42c"
