@@ -8,7 +8,6 @@ from pymongo import MongoClient
 
 
 
-
 registered_users = {}
 thread_list = []
 user_found = False
